@@ -1,4 +1,5 @@
-import type { LatLon } from "./types";
+import { LatLon } from "../../types";
+
 
 const toRad = (deg: number) => (deg * Math.PI) / 180;
 

@@ -1,11 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import type {
-  AddressProvider,
-  AddressValue,
-  LatLon,
-  RegionBias,
-} from "../types";
-import { useAddressSearch } from "../hooks/useAddressSearch";
+import type { AddressProvider, AddressValue, LatLon, RegionBias } from "../../types";
+import { useAddressSearch } from "../../core/useAddressSearch";
+import { formatDistanceMeters } from "../../utils/distance";
 
 export type AddressSelectOption = AddressValue & { distanceMeters?: number };
 
@@ -31,16 +27,10 @@ export type AddressSelectProps = {
     opt: AddressSelectOption,
     state: { isActive: boolean; isSelected: boolean }
   ) => React.ReactNode;
+
   formatDistance?: (meters: number) => string;
 
   onError?: (err: unknown) => void;
-};
-
-const defaultFormatDistance = (meters: number) => {
-  if (!Number.isFinite(meters)) return "";
-  if (meters < 1000) return `${Math.round(meters)} m`;
-  const km = meters / 1000;
-  return `${km.toFixed(km < 10 ? 1 : 0)} km`;
 };
 
 const getKey = (o: AddressValue, i: number) =>
@@ -61,7 +51,7 @@ export const AddressSelect = (props: AddressSelectProps) => {
     debounceMs,
     cacheTtlMs,
     renderOption,
-    formatDistance = defaultFormatDistance,
+    formatDistance = formatDistanceMeters,
     onError,
   } = props;
 
@@ -90,6 +80,11 @@ export const AddressSelect = (props: AddressSelectProps) => {
     if (!error) return;
     onError?.(error);
   }, [error, onError]);
+
+  useEffect(() => {
+    if (isOpen) return;
+    setInputValue(value?.label ?? "");
+  }, [value?.label, isOpen, setInputValue]);
 
   const selectedId = useMemo(() => (value?.id ? value.id : null), [value]);
 
@@ -156,10 +151,7 @@ export const AddressSelect = (props: AddressSelectProps) => {
 
     if (e.key === "ArrowUp") {
       e.preventDefault();
-      setActiveIndex((i) => {
-        const next = i <= 0 ? 0 : i - 1;
-        return next;
-      });
+      setActiveIndex((i) => (i <= 0 ? 0 : i - 1));
       return;
     }
 
@@ -168,7 +160,6 @@ export const AddressSelect = (props: AddressSelectProps) => {
       e.preventDefault();
       const opt = options[activeIndex];
       if (opt) commit(opt);
-      return;
     }
   };
 
@@ -182,32 +173,12 @@ export const AddressSelect = (props: AddressSelectProps) => {
         : null;
 
     return (
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          alignItems: "baseline",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
-          style={{
-            flex: 1,
-            minWidth: 0,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
+      <div style={{ display: "flex", gap: 12, alignItems: "baseline", justifyContent: "space-between" }}>
+        <div style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {opt.label}
         </div>
         {dist ? (
-          <div
-            style={{
-              opacity: state.isSelected ? 1 : 0.75,
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
+          <div style={{ opacity: state.isSelected ? 1 : 0.75, fontVariantNumeric: "tabular-nums" }}>
             {dist}
           </div>
         ) : null}
@@ -216,14 +187,7 @@ export const AddressSelect = (props: AddressSelectProps) => {
   };
 
   return (
-    <div
-      ref={rootRef}
-      style={{
-        width: "100%",
-        position: "relative",
-        fontFamily: "system-ui, sans-serif",
-      }}
-    >
+    <div ref={rootRef} style={{ width: "100%", position: "relative", fontFamily: "system-ui, sans-serif" }}>
       <input
         ref={inputRef}
         type="text"
@@ -231,9 +195,7 @@ export const AddressSelect = (props: AddressSelectProps) => {
         aria-controls={listId}
         aria-expanded={isOpen}
         aria-autocomplete="list"
-        aria-activedescendant={
-          activeIndex >= 0 ? `${id}-opt-${activeIndex}` : undefined
-        }
+        aria-activedescendant={activeIndex >= 0 ? `${id}-opt-${activeIndex}` : undefined}
         disabled={disabled}
         placeholder={placeholder}
         value={inputValue}
@@ -267,13 +229,9 @@ export const AddressSelect = (props: AddressSelectProps) => {
             boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
           }}
         >
-          {isLoading ? (
-            <div style={{ padding: 12, opacity: 0.8 }}>Loading…</div>
-          ) : null}
+          {isLoading ? <div style={{ padding: 12, opacity: 0.8 }}>Loading…</div> : null}
 
-          {!isLoading &&
-          inputValue.trim().length > 0 &&
-          options.length === 0 ? (
+          {!isLoading && inputValue.trim().length > 0 && options.length === 0 ? (
             <div style={{ padding: 12, opacity: 0.8 }}>No results</div>
           ) : null}
 
@@ -303,13 +261,7 @@ export const AddressSelect = (props: AddressSelectProps) => {
             );
           })}
 
-          <div
-            style={{
-              padding: "10px 12px",
-              opacity: 0.6,
-              borderTop: "1px solid rgba(0,0,0,0.08)",
-            }}
-          >
+          <div style={{ padding: "10px 12px", opacity: 0.6, borderTop: "1px solid rgba(0,0,0,0.08)" }}>
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}

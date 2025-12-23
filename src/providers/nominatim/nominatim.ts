@@ -4,7 +4,7 @@ import type {
   AddressValue,
   LatLon,
   RegionBias,
-} from "../types";
+} from "../../types";
 
 export type NominatimProviderOptions = {
   endpoint?: string;
@@ -109,10 +109,7 @@ export const createNominatimProvider = (
 
   const provider: AddressProvider = {
     id: "nominatim",
-    search: async (
-      query: string,
-      ctx: AddressSearchContext & { signal?: AbortSignal }
-    ) => {
+    search: async (query: string, ctx: AddressSearchContext) => {
       const params = new URLSearchParams();
       params.set("q", query);
       params.set("format", "jsonv2");
