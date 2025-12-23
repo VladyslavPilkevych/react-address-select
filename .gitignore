@@ -8,7 +8,6 @@ coverage
 .env.*.local
 .vscode
 .idea
-pnpm-lock.yaml
 package-lock.json
 yarn.lock
 *.tgz
