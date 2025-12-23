@@ -2,6 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/react-address-select.svg)](https://www.npmjs.com/package/react-address-select)
 [![npm downloads](https://img.shields.io/npm/dm/react-address-select.svg)](https://www.npmjs.com/package/react-address-select)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://vladyslavpilkevych.github.io/react-address-select/)
 
 A flexible React address autocomplete/select library with pluggable providers, locale/region biasing, and optional distance calculation.
 
@@ -14,6 +15,17 @@ A flexible React address autocomplete/select library with pluggable providers, l
 - Optional distance calculation from an origin point
 - Minimal UI component included (`AddressSelect`)
 - Optional `react-select/async` wrapper (subpath export)
+
+## Live demo
+
+**Interactive demo:**  
+https://vladyslavpilkevych.github.io/react-address-select/
+
+The demo showcases:
+- `AddressSelect` (built-in minimal UI)
+- `react-select/async` adapter
+- Locale switching (en / de / ua)
+- Region biasing and distance calculation
 
 ## Install
 
